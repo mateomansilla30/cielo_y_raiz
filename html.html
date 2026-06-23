@@ -42,7 +42,7 @@
   a{color:inherit}
   img{max-width:100%;display:block}
 
-  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px;position:relative;z-index:2}
   .eyebrow{
     font-family:'Nunito';font-weight:700;text-transform:uppercase;
     letter-spacing:.22em;font-size:.72rem;color:var(--teal-mid);
@@ -361,6 +361,42 @@
     footer{padding-bottom:calc(36px + env(safe-area-inset-bottom))}
   }
 
+  /* ---------- side index ---------- */
+  .side-index{
+    position:fixed;right:22px;top:50%;transform:translateY(-50%);
+    z-index:48;display:flex;flex-direction:column;gap:14px;
+    align-items:flex-end;
+  }
+  .side-index a{
+    display:flex;align-items:center;gap:10px;text-decoration:none;
+    cursor:pointer;
+  }
+  .side-index a .si-label{
+    font-family:'Nunito';font-weight:700;font-size:.72rem;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--teal);
+    background:rgba(233,233,221,.82);backdrop-filter:blur(8px);
+    padding:4px 10px;border-radius:20px;
+    opacity:0;transform:translateX(6px);
+    transition:opacity .2s,transform .2s;
+    white-space:nowrap;pointer-events:none;
+  }
+  .side-index a:hover .si-label,
+  .side-index a.active .si-label{opacity:1;transform:none}
+  .side-index a .si-dot{
+    flex:none;width:8px;height:8px;border-radius:50%;
+    background:rgba(35,95,113,.25);
+    border:2px solid transparent;
+    transition:background .25s,transform .25s,border-color .25s;
+  }
+  .side-index a:hover .si-dot{background:var(--teal-mid);transform:scale(1.25)}
+  .side-index a.active .si-dot{
+    background:var(--teal);transform:scale(1.35);
+    border-color:rgba(35,95,113,.2);
+    box-shadow:0 0 0 4px rgba(35,95,113,.12);
+  }
+
+  @media(max-width:880px){.side-index{display:none}}
+
   @media(prefers-reduced-motion:reduce){
     *{animation:none!important;transition:none!important}
     html{scroll-behavior:auto}
@@ -410,6 +446,15 @@
 <template id="t-spark">
   <svg viewBox="0 0 40 40"><path d="M20 0 C22 14 26 18 40 20 C26 22 22 26 20 40 C18 26 14 22 0 20 C14 18 18 14 20 0Z" fill="#3F8298"/></svg>
 </template>
+
+<nav class="side-index" aria-label="Índice de secciones">
+  <a href="#top">    <span class="si-label">Inicio</span>      <span class="si-dot"></span></a>
+  <a href="#sobre">  <span class="si-label">Sobre mí</span>    <span class="si-dot"></span></a>
+  <a href="#servicios"><span class="si-label">Servicios</span> <span class="si-dot"></span></a>
+  <a href="#proceso"><span class="si-label">Proceso</span>     <span class="si-dot"></span></a>
+  <a href="#testimonios"><span class="si-label">Testimonios</span><span class="si-dot"></span></a>
+  <a href="#contacto"><span class="si-label">Contacto</span>   <span class="si-dot"></span></a>
+</nav>
 
 <header class="nav">
   <div class="nav-inner">
@@ -692,6 +737,18 @@
   backdrop.addEventListener('click', closeMenu);
   mobileNav.querySelectorAll('a').forEach(a=> a.addEventListener('click', closeMenu));
   document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeMenu(); });
+
+  // side index active state
+  const siLinks = document.querySelectorAll('.side-index a');
+  const sections = ['top','sobre','servicios','proceso','testimonios','contacto']
+    .map(id=> document.getElementById(id)).filter(Boolean);
+  const siObs = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      const link = document.querySelector(`.side-index a[href="#${e.target.id}"]`);
+      if(link) link.classList.toggle('active', e.isIntersecting);
+    });
+  },{threshold:.3,rootMargin:'-10% 0px -60% 0px'});
+  sections.forEach(s=> siObs.observe(s));
 
   // reveal on scroll
   const io = new IntersectionObserver((entries)=>{
