@@ -24,7 +24,7 @@
   }
 
   *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
+  html{scroll-behavior:smooth;overflow-x:hidden}
   body{
     font-family:'Nunito',system-ui,sans-serif;
     background-color:var(--cream);
@@ -52,7 +52,7 @@
   .spark{position:absolute;z-index:1;pointer-events:none;opacity:.9}
   .spark svg{width:100%;height:100%}
 
-  section{position:relative}
+  section{position:relative;overflow-x:clip;overflow-y:visible}
 
   @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
   @keyframes floatR{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-8px) rotate(8deg)}}
